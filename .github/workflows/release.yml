@@ -31,7 +31,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Get version
-        run: echo "RELEASE_VERSION=${GITHUB_REF##*release/v}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=${GITHUB_REF##*release/v}.${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Set version
         run: sed -i "s/<revision>dev<\/revision>/<revision>${RELEASE_VERSION}<\/revision>/g" pom.xml
@@ -39,7 +39,7 @@ jobs:
       - name: Commit version
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Set version $RELEASE_VERSION
+          commit_message: Set version ${{ RELEASE_VERSION }}
 
       - name: Package
         run: mvn package
@@ -47,7 +47,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${RELEASE_VERSION}.${{ github.run_number }}
+          tag_name: ${{ RELEASE_VERSION }}
           files: |
-            ${{ github.workspace }}/core/target/mercury-core-${RELEASE_VERSION}.jar
-            ${{ github.workspace }}/http/target/mercury-http-${RELEASE_VERSION}.jar
+            ${{ github.workspace }}/core/target/mercury-core-*.jar
+            ${{ github.workspace }}/http/target/mercury-http-*.jar
