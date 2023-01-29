@@ -20,16 +20,8 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <revision>1.0.0-SNAPSHOT</revision>
+        <revision>dev</revision>
     </properties>
-
-    <distributionManagement>
-       <repository>
-         <id>github</id>
-         <name>Framework for integration tests</name>
-         <url>https://maven.pkg.github.com/RedRoverCommunity/Mercury</url>
-       </repository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
