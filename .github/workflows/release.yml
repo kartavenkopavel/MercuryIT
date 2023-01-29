@@ -35,9 +35,9 @@ jobs:
 
       - name: Set version
         run: |
-          sed -i -E "s/<version>*(.+<\/version>)/<version>${RELEASE_VERSION}<\/version>/g" ./core/pom.xml
-          sed -i -E "s/<version>*(.+<\/version>)/<version>${RELEASE_VERSION}<\/version>/g" ./http/pom.xml
-          sed -i -E "s/<version>*(.+<\/version>)/<version>${RELEASE_VERSION}<\/version>/g" ./pom.xml
+          sed -i -E "0,/<version>*(.+<\/version>)/s//<version>${RELEASE_VERSION}<\/version>/g" ./core/pom.xml
+          sed -i -E "0,/<version>*(.+<\/version>)/s//<version>${RELEASE_VERSION}<\/version>/g" ./http/pom.xml
+          sed -i -E "0,/<version>*(.+<\/version>)/s//<version>${RELEASE_VERSION}<\/version>/g" ./pom.xml
 
       - name: Commit version
         id: commit_version
