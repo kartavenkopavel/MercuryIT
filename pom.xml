@@ -20,7 +20,7 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <revision>Array</revision>
+        <revision></revision>
     </properties>
 
     <dependencies>
