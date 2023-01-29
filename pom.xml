@@ -7,7 +7,7 @@
     <groupId>community.redrover.mercury</groupId>
     <artifactId>mercury-pom</artifactId>
     <packaging>pom</packaging>
-    <version>${revision}</version>
+    <version>1.0</version>
 
     <modules>
         <module>core</module>
