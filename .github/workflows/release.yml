@@ -56,4 +56,3 @@ jobs:
           files: |
             ${{ github.workspace }}/core/target/mercury-core-*.jar
             ${{ github.workspace }}/http/target/mercury-http-*.jar
-            ${{ github.workspace }}/pom.xml
