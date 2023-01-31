@@ -1,6 +1,5 @@
 package community.redrover.mercury;
 
-import com.google.gson.Gson;
 import lombok.SneakyThrows;
 
 import java.net.URI;
@@ -9,7 +8,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 
-public class MercuryHttpRequest {
+public class MercuryHttpRequest extends MercuryRequest {
 
     private HttpRequest.Builder request;
     private HttpRequest.BodyPublisher body;
