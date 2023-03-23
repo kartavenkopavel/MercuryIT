@@ -1,6 +1,0 @@
-jdk:
-  - openjdk11
-install:
-   - mvn install
-env:
-   GROUP: "community.redrover.mercury"

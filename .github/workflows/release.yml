@@ -34,10 +34,7 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/v}.${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Set version
-        run: |
-          sed -i -E "0,/<version>*(.+<\/version>)/s//<version>${RELEASE_VERSION}<\/version>/g" ./core/pom.xml
-          sed -i -E "0,/<version>*(.+<\/version>)/s//<version>${RELEASE_VERSION}<\/version>/g" ./http/pom.xml
-          sed -i -E "0,/<version>*(.+<\/version>)/s//<version>${RELEASE_VERSION}<\/version>/g" ./pom.xml
+        run: sed -i -E "0,/<revision>*(.+<\/revision>)/s//<revision>${RELEASE_VERSION}<\/revision>/g" ./pom.xml
 
       - name: Commit version
         id: commit_version

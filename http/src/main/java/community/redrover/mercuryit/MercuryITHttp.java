@@ -1,4 +1,4 @@
-package community.redrover.mercury;
+package community.redrover.mercuryit;
 
 import lombok.SneakyThrows;
 
@@ -8,35 +8,35 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 
-public class MercuryHttpRequest extends MercuryRequest {
+public class MercuryITHttp extends MercuryITRequest<MercuryITHttp> {
 
     private HttpRequest.Builder request;
     private HttpRequest.BodyPublisher body;
 
-    MercuryHttpRequest() {
+    MercuryITHttp() {
         this.request = HttpRequest.newBuilder();
     }
 
-    public MercuryHttpRequest uri(String uri) {
+    public MercuryITHttp uri(String uri) {
         request = request.uri(URI.create(uri));
 
         return this;
     }
 
-    public MercuryHttpRequest body() {
+    public MercuryITHttp body() {
         return body(null);
     }
 
-    public <T> MercuryHttpRequest body(T body) {
+    public <T> MercuryITHttp body(T body) {
         String bodyStr = null;
         if (body != null) {
-            bodyStr = MercuryHttp.GSON.toJson(body);
+            bodyStr = config().helper().toJson(body);
         }
 
         return body(bodyStr);
     }
 
-    public MercuryHttpRequest body(String body) {
+    public MercuryITHttp body(String body) {
         if (body != null) {
             this.body = HttpRequest.BodyPublishers.ofString(body);
         }
@@ -45,13 +45,13 @@ public class MercuryHttpRequest extends MercuryRequest {
     }
 
     @SneakyThrows
-    private MercuryHttpResponse send(HttpRequest request) {
-        return new MercuryHttpResponse(
+    private MercuryITHttpResponse send(HttpRequest request) {
+        return new MercuryITHttpResponse(
                 HttpClient.newHttpClient()
                         .send(request, HttpResponse.BodyHandlers.ofString()));
     }
 
-    public MercuryHttpResponse post() {
+    public MercuryITHttpResponse post() {
         request = request.header("Content-Type", "application/json");
         if (body != null) {
             request = request.POST(body);
@@ -60,11 +60,11 @@ public class MercuryHttpRequest extends MercuryRequest {
         return send(request.build());
     }
 
-    public MercuryHttpResponse get() {
+    public MercuryITHttpResponse get() {
         return send(request.GET().build());
     }
 
-    public MercuryHttpResponse delete() {
+    public MercuryITHttpResponse delete() {
         return send(request.DELETE().build());
     }
 }

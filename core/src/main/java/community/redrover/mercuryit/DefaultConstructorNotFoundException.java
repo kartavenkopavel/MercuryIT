@@ -1,4 +1,4 @@
-package community.redrover.mercury;
+package community.redrover.mercuryit;
 
 public class DefaultConstructorNotFoundException extends RuntimeException {
 
