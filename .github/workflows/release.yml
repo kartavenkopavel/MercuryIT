@@ -51,5 +51,5 @@ jobs:
           tag_name: ${{ env.RELEASE_VERSION }}
           target_commitish: ${{ steps.commit_version.outputs.commit_hash }}
           files: |
-            ${{ github.workspace }}/core/target/mercury-core-*.jar
-            ${{ github.workspace }}/http/target/mercury-http-*.jar
+            ${{ github.workspace }}/core/target/mercuryit-core-*.jar
+            ${{ github.workspace }}/http/target/mercuryit-http-*.jar
