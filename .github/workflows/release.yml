@@ -31,7 +31,10 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Get version
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/v}.${{ github.run_number }}" >> $GITHUB_ENV
+        run: | 
+          echo "BRANCH_VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
+          echo "BUILD_VERSION=git tag | grep '${BRANCH_VERSION}.' | wc -l" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=${BRANCH_VERSION}.${BUILD_VERSION}" >> $GITHUB_ENV
 
       - name: Set version
         run: sed -i -E "0,/<revision>*(.+<\/revision>)/s//<revision>${RELEASE_VERSION}<\/revision>/g" ./pom.xml
