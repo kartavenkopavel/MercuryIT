@@ -30,14 +30,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Get branch version
-        run: echo "BRANCH_VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
-
-      - name: Get build version
-        run: echo "BUILD_VERSION=git tag | grep '${BRANCH_VERSION}.' | wc -l" >> $GITHUB_ENV
-
-      - name: Get release version
-        run: echo "RELEASE_VERSION=${BRANCH_VERSION}.${BUILD_VERSION}" >> $GITHUB_ENV
+      - name: Get version
+        run: |
+          BRANCH_VERSION=${GITHUB_REF#refs/*/v}
+          BUILD_VERSION=$(git tag | grep '${BRANCH_VERSION}.' | wc -l)
+          echo "RELEASE_VERSION=${BRANCH_VERSION}.${BUILD_VERSION}" >> $GITHUB_ENV
 
       - name: Set version
         run: sed -i -E "0,/<revision>*(.+<\/revision>)/s//<revision>${RELEASE_VERSION}<\/revision>/g" ./pom.xml
