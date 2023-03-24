@@ -20,7 +20,7 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <revision>.</revision>
+        <revision>0.0.git tag | grep '0.0.' | wc -l</revision>
     </properties>
 
     <dependencies>
