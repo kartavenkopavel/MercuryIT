@@ -56,3 +56,4 @@ jobs:
           files: |
             ${{ github.workspace }}/core/target/mercuryit-core-*.jar
             ${{ github.workspace }}/http/target/mercuryit-http-*.jar
+            ${{ github.workspace }}/json/target/mercuryit-json-*.jar
