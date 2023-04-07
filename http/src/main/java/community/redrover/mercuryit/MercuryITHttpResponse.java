@@ -7,7 +7,8 @@ public class MercuryITHttpResponse extends MercuryITObject<MercuryITHttpResponse
 
     private final HttpResponse<String> response;
 
-    MercuryITHttpResponse(HttpResponse<String> response) {
+    MercuryITHttpResponse(MercuryITConfigHolder configHolder, HttpResponse<String> response) {
+        super(configHolder);
         this.response = response;
     }
 
@@ -20,6 +21,6 @@ public class MercuryITHttpResponse extends MercuryITObject<MercuryITHttpResponse
     }
 
     public <T> T getBody(Class<T> clazz) {
-        return  config().helper().fromJson(getBody(), clazz);
+        return  config(MercuryITJsonConfig.class).fromJson(getBody(), clazz);
     }
 }
