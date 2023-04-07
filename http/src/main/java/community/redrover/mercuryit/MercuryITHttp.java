@@ -13,7 +13,8 @@ public class MercuryITHttp extends MercuryITRequest<MercuryITHttp> {
     private HttpRequest.Builder request;
     private HttpRequest.BodyPublisher body;
 
-    MercuryITHttp() {
+    MercuryITHttp(MercuryITConfigHolder configHolder) {
+        super(configHolder);
         this.request = HttpRequest.newBuilder();
     }
 
@@ -30,7 +31,7 @@ public class MercuryITHttp extends MercuryITRequest<MercuryITHttp> {
     public <T> MercuryITHttp body(T body) {
         String bodyStr = null;
         if (body != null) {
-            bodyStr = config().helper().toJson(body);
+            bodyStr = config(MercuryITJsonConfig.class).toJson(body);
         }
 
         return body(bodyStr);
@@ -46,7 +47,7 @@ public class MercuryITHttp extends MercuryITRequest<MercuryITHttp> {
 
     @SneakyThrows
     private MercuryITHttpResponse send(HttpRequest request) {
-        return new MercuryITHttpResponse(
+        return new MercuryITHttpResponse(configHolder(),
                 HttpClient.newHttpClient()
                         .send(request, HttpResponse.BodyHandlers.ofString()));
     }

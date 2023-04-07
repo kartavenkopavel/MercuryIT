@@ -18,5 +18,11 @@
             <artifactId>mercuryit-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>community.redrover.mercuryit</groupId>
+            <artifactId>mercuryit-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
