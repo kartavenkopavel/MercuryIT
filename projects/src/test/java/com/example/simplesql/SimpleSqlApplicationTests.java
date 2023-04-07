@@ -55,7 +55,8 @@ public class SimpleSqlApplicationTests {
         MercuryIT.request(MercuryITHttp.class)
                 .uri(getUrl(storedEmployee.getId().toString()))
                 .get()
-                .assertion(MercuryITHttpResponse::getCode).equalsTo(200).apply(response -> {
+                .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
+                .apply(response -> {
                     EmployeeEntity actualEmployee = response.getBody(EmployeeEntity.class);
                     Assertions.assertEquals(storedEmployee, actualEmployee);
                 });
