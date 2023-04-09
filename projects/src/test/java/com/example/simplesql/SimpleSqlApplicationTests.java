@@ -46,7 +46,13 @@ public class SimpleSqlApplicationTests {
                 .uri(getUrl("list"))
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .assertion(MercuryITHttpResponse::getBody).equalsTo("[{\"id\":1,\"name\":\"Pavel\",\"title\":\"QA\"}]");
+                .apply(response -> {
+                    EmployeeEntity[] actualEmployee = response.getBody(EmployeeEntity[].class);
+                    Assertions.assertEquals(1, actualEmployee.length);
+                    Assertions.assertEquals(storedEmployee.getId(), actualEmployee[0].getId());
+                    Assertions.assertEquals(storedEmployee.getName(), actualEmployee[0].getName());
+                    Assertions.assertEquals(storedEmployee.getTitle(), actualEmployee[0].getTitle());
+                });
     }
 
     @Test
