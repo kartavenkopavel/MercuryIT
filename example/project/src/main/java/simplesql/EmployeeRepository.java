@@ -1,4 +1,4 @@
-package com.example.simplesql;
+package simplesql;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

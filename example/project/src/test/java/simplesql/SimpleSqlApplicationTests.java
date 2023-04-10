@@ -1,4 +1,4 @@
-package com.example.simplesql;
+package simplesql;
 
 import community.redrover.mercuryit.MercuryIT;
 import community.redrover.mercuryit.MercuryITHttp;
@@ -7,6 +7,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+import simplesql.EmployeeEntity;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")

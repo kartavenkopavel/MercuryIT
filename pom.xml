@@ -13,7 +13,6 @@
         <module>core</module>
         <module>json</module>
         <module>http</module>
-        <module>projects</module>
     </modules>
 
     <properties>
