@@ -26,8 +26,7 @@ public class ApplicationTests {
         return String.format("http://localhost:%d/api/employees/%d", port, id);
     }
 
-    private final EmployeeEntity storedEmployee = EmployeeEntity
-            .builder()
+    private final EmployeeEntity storedEmployee = EmployeeEntity.builder()
             .name("Pavel")
             .title("QA")
             .build();
