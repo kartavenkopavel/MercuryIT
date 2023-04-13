@@ -79,3 +79,4 @@ public class SimpleSqlApplicationTests {
                 .assertion(MercuryITHttpResponse::getBody).equalsTo("");
     }
 }
+
