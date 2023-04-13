@@ -50,9 +50,7 @@ public class SimpleSqlApplicationTests {
                 .apply(response -> {
                     EmployeeEntity[] actualEmployee = response.getBody(EmployeeEntity[].class);
                     Assertions.assertEquals(1, actualEmployee.length);
-                    Assertions.assertEquals(storedEmployee.getId(), actualEmployee[0].getId());
-                    Assertions.assertEquals(storedEmployee.getName(), actualEmployee[0].getName());
-                    Assertions.assertEquals(storedEmployee.getTitle(), actualEmployee[0].getTitle());
+                    Assertions.assertEquals(storedEmployee, actualEmployee[0]);
                 });
     }
 
