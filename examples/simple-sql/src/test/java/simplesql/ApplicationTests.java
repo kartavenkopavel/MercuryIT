@@ -22,7 +22,15 @@ public class ApplicationTests {
         return String.format("http://localhost:%d/api/employees/%s", port, endPoint);
     }
 
-    private final EmployeeEntity storedEmployee = EmployeeEntity.builder().name("Pavel").title("QA").build();
+    private String getUrl(Long id) {
+        return String.format("http://localhost:%d/api/employees/%d", port, id);
+    }
+
+    private final EmployeeEntity storedEmployee = EmployeeEntity
+            .builder()
+            .name("Pavel")
+            .title("QA")
+            .build();
 
     @Test
     @Order(1)
@@ -57,12 +65,11 @@ public class ApplicationTests {
     @Order(3)
     public void testGetEmployeeById() {
         MercuryIT.request(MercuryITHttp.class)
-                .uri(getUrl(storedEmployee.getId().toString()))
+                .uri(getUrl(storedEmployee.getId()))
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .apply(response -> {
-                    EmployeeEntity actualEmployee = response.getBody(EmployeeEntity.class);
-                    Assertions.assertEquals(storedEmployee, actualEmployee);
+                    Assertions.assertEquals(storedEmployee, response.getBody(EmployeeEntity.class));
                 });
     }
 
@@ -70,7 +77,7 @@ public class ApplicationTests {
     @Order(4)
     public void testDeleteEmployee() {
         MercuryIT.request(MercuryITHttp.class)
-                .uri(getUrl(String.format("delete/%s", storedEmployee.getId().toString())))
+                .uri(getUrl(String.format("delete/%d", storedEmployee.getId())))
                 .delete()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .assertion(MercuryITHttpResponse::getBody).equalsTo("");
