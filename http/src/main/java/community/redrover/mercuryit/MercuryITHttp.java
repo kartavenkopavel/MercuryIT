@@ -10,6 +10,9 @@ import java.net.http.HttpResponse;
 
 public class MercuryITHttp extends MercuryITRequest<MercuryITHttp> {
 
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String CONTENT_VALUE = "application/json";
+
     private HttpRequest.Builder request;
     private HttpRequest.BodyPublisher body;
 
@@ -53,7 +56,7 @@ public class MercuryITHttp extends MercuryITRequest<MercuryITHttp> {
     }
 
     public MercuryITHttpResponse post() {
-        request = request.header("Content-Type", "application/json");
+        request = request.header(CONTENT_TYPE, CONTENT_VALUE);
         if (body != null) {
             request = request.POST(body);
         }
@@ -67,5 +70,23 @@ public class MercuryITHttp extends MercuryITRequest<MercuryITHttp> {
 
     public MercuryITHttpResponse delete() {
         return send(request.DELETE().build());
+    }
+
+    public MercuryITHttpResponse put() {
+        request = request.header(CONTENT_TYPE, CONTENT_VALUE);
+        if (body != null) {
+            request = request.PUT(body);
+        }
+
+        return send(request.build());
+    }
+
+    public MercuryITHttpResponse patch() {
+        request = request.header(CONTENT_TYPE, CONTENT_VALUE);
+        if (body != null) {
+            request =  request.method("PATCH", body);
+        }
+
+        return send(request.build());
     }
 }
