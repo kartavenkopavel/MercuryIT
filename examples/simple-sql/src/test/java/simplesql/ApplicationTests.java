@@ -7,14 +7,13 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
-import simplesql.EmployeeEntity;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SimpleSqlApplicationTests {
+public class ApplicationTests {
 
     @LocalServerPort
     private int port;
@@ -50,9 +49,7 @@ public class SimpleSqlApplicationTests {
                 .apply(response -> {
                     EmployeeEntity[] actualEmployee = response.getBody(EmployeeEntity[].class);
                     Assertions.assertEquals(1, actualEmployee.length);
-                    Assertions.assertEquals(storedEmployee.getId(), actualEmployee[0].getId());
-                    Assertions.assertEquals(storedEmployee.getName(), actualEmployee[0].getName());
-                    Assertions.assertEquals(storedEmployee.getTitle(), actualEmployee[0].getTitle());
+                    Assertions.assertEquals(storedEmployee, actualEmployee[0]);
                 });
     }
 
