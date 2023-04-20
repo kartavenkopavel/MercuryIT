@@ -36,12 +36,8 @@ public class EmployeeController {
         return employeeRepository.save(employee);
     }
 
-    @PatchMapping("/update")
-    public EmployeeEntity update(@RequestBody Map<String, Object> employeeMap) {
-        Long id = null;
-        if (employeeMap.get(EmployeeEntity.ID_FIELD) == null) {
-            id = Long.decode(employeeMap.get(EmployeeEntity.ID_FIELD).toString());
-        }
+    @PatchMapping("/update/{id}")
+    public EmployeeEntity update(@RequestBody Map<String, Object> employeeMap, @PathVariable Long id) {
         EmployeeEntity employee = getById(id);
 
         for (String key : employeeMap.keySet()) {
@@ -56,7 +52,7 @@ public class EmployeeController {
             }
         }
 
-        return employee;
+        return employeeRepository.save(employee);
     }
 
     @DeleteMapping("/delete/{id}")
