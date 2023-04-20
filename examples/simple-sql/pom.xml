@@ -12,13 +12,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>simplesql</artifactId>
+    <artifactId>simple-http</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
         <java.version>11</java.version>
-
-        <mercuryit-version>0.1.1</mercuryit-version>
     </properties>
 
     <repositories>
@@ -50,23 +48,28 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.RedRoverCommunity.MercuryIT</groupId>
-            <artifactId>mercuryit-core</artifactId>
-            <version>${mercuryit-version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.RedRoverCommunity.MercuryIT</groupId>
-            <artifactId>mercuryit-http</artifactId>
-            <version>${mercuryit-version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.26</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!--
+        This is dependency from the global repository
+        <dependency>
+            <groupId>com.github.RedRoverCommunity.MercuryIT</groupId>
+            <artifactId>mercuryit-http</artifactId>
+            <version>0.1.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        Next dependency is from local repository. If you want to use it you should run 'mvn install' for MercuryIT project
+        -->
+        <dependency>
+            <groupId>community.redrover.mercuryit</groupId>
+            <artifactId>mercuryit-http</artifactId>
+            <version>dev</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
