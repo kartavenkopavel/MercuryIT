@@ -1,4 +1,4 @@
-package simplesql;
+package simple;
 
 import lombok.*;
 
