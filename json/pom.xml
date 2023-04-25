@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>community.redrover.mercuryit</groupId>
-            <artifactId>mercuryit-core</artifactId>
+            <artifactId>mercuryit-config</artifactId>
             <version>${project.version}</version>
         </dependency>
 

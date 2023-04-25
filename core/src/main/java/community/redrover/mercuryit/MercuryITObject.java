@@ -3,15 +3,17 @@ package community.redrover.mercuryit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+
+@SuppressWarnings("unchecked")
 public abstract class MercuryITObject<Self extends MercuryITObject<?>> {
 
-    private MercuryITConfigHolder configHolder;
+    private final MercuryITConfigHolder configHolder;
 
     protected MercuryITObject(MercuryITConfigHolder configHolder) {
         this.configHolder = configHolder;
     }
 
-    protected MercuryITConfigHolder configHolder() {
+    protected MercuryITConfigHolder copyOfConfigHolder() {
         return configHolder.copy();
     }
 
@@ -19,17 +21,16 @@ public abstract class MercuryITObject<Self extends MercuryITObject<?>> {
         return configHolder.config(clazz);
     }
 
-    public Self config(MercuryITConfigHolder configHolder) {
-        this.configHolder = configHolder;
-        return (Self)this;
-    }
-
     public <Config extends MercuryITConfig<?>> Self config(Class<Config> clazz, Function<Config, Config> configFunction) {
         this.configHolder.set(clazz, configFunction.apply(config(clazz)));
         return (Self)this;
     }
 
-    public Self apply(Consumer<Self> actual) {
+    public <Result> Result apply(Function<Self, Result> apply) {
+        return apply.apply((Self)this);
+    }
+
+    public Self accept(Consumer<Self> actual) {
         actual.accept((Self)this);
         return (Self)this;
     }

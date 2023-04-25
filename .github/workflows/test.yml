@@ -30,5 +30,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: test
-        run: mvn test
+      - name: Install artifacts
+        run: mvn install
+
+      - name: Test artifacts
+        run: mvn -f examples/simple-http/pom.xml test

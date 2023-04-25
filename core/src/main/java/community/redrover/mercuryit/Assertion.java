@@ -18,4 +18,25 @@ public class Assertion<Self> {
     public Self equalsTo(Object actual, Object expected) {
         return equalsTo(actual, expected, null);
     }
+
+    public Self notNull(Object actual, String message) {
+        Assertions.assertNotNull(actual, message);
+        return self;
+    }
+
+    public Self notNull(Object actual) {
+        Assertions.assertNotNull(actual);
+        return self;
+    }
+
+    public Self isNull(Object actual, String message) {
+        Assertions.assertNull(actual, message);
+        return self;
+    }
+
+    public Self isNull(Object actual) {
+        Assertions.assertNull(actual);
+        return self;
+    }
+
 }

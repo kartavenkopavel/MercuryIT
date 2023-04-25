@@ -1,13 +1,22 @@
 package community.redrover.mercuryit;
 
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.MapConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.YAMLConfiguration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.TreeMap;
 
-public class MercuryITUtils {
 
-    public static class CannotCreateRequestException extends RuntimeException {
+public class MercuryITHelper {
 
-        public CannotCreateRequestException(Throwable cause, String className) {
+    public static class CannotCreateInstanceException extends RuntimeException {
+
+        public CannotCreateInstanceException(Throwable cause, String className) {
             super(String.format("Cannot create instance of \"%s\".", className), cause);
         }
     }
@@ -19,7 +28,7 @@ public class MercuryITUtils {
         }
     }
 
-    private static <Result> Result create(Class<Result> clazz, Class<?>[] classes, Object[] objects) {
+    static <Result> Result create(Class<Result> clazz, Class<?>[] classes, Object[] objects) {
         Constructor<Result> defaultConstructor;
         try {
             defaultConstructor = clazz.getDeclaredConstructor(classes);
@@ -30,16 +39,7 @@ public class MercuryITUtils {
         try {
             return defaultConstructor.newInstance(objects);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new CannotCreateRequestException(e, clazz.getSimpleName());
+            throw new CannotCreateInstanceException(e, clazz.getSimpleName());
         }
-    }
-
-
-    static <Request extends MercuryITRequest<?>> Request createRequest(Class<Request> clazz, MercuryITConfigHolder configHolder) {
-        return create(clazz, new Class[]{MercuryITConfigHolder.class}, new Object[]{configHolder});
-    }
-
-    static <Config extends MercuryITConfig<?>> Config createConfig(Class<Config> clazz) {
-        return create(clazz, new Class[]{}, new Object[]{});
     }
 }
