@@ -26,11 +26,11 @@ public class ApplicationTests {
     @Order(1)
     public void testCreateEmployee() {
         MercuryIT.request(MercuryITHttp.class)
-                .uri(String.format("http://localhost:%d/api/employee/create", port))
+                .urif("http://localhost:%d/api/employee/create", port)
                 .body(storedEmployee)
                 .post()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .apply(response -> {
+                .accept(response -> {
                     EmployeeEntity actualEmployee = response.getBody(EmployeeEntity.class);
                     storedEmployee.setId(actualEmployee.getId());
                     Assertions.assertEquals(storedEmployee, actualEmployee);
@@ -41,10 +41,10 @@ public class ApplicationTests {
     @Order(2)
     public void testGetListEmployees() {
         MercuryIT.request(MercuryITHttp.class)
-                .uri(String.format("http://localhost:%d/api/employee/list", port))
+                .urif("http://localhost:%d/api/employee/list", port)
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .apply(response ->
+                .accept(response ->
                     Assertions.assertArrayEquals(new EmployeeEntity[]{storedEmployee},
                             response.getBody(EmployeeEntity[].class))
                 );
@@ -54,10 +54,10 @@ public class ApplicationTests {
     @Order(3)
     public void testGetEmployeeById() {
         MercuryIT.request(MercuryITHttp.class)
-                .uri(String.format("http://localhost:%d/api/employee/%d", port, storedEmployee.getId()))
+                .urif("http://localhost:%d/api/employee/%d", port, storedEmployee.getId())
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .apply(response ->
+                .accept(response ->
                     Assertions.assertEquals(storedEmployee, response.getBody(EmployeeEntity.class))
                 );
     }
@@ -71,11 +71,11 @@ public class ApplicationTests {
                 .build();
 
         MercuryIT.request(MercuryITHttp.class)
-                .uri(String.format("http://localhost:%d/api/employee/edit", port))
+                .urif("http://localhost:%d/api/employee/edit", port)
                 .body(editEmployee)
                 .put()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .apply(response -> {
+                .accept(response -> {
                     Assertions.assertNull(response.getBody(EmployeeEntity.class).getTitle());
                     Assertions.assertEquals(editEmployee, response.getBody(EmployeeEntity.class));
                 });
@@ -89,11 +89,11 @@ public class ApplicationTests {
                 .build();
 
         MercuryIT.request(MercuryITHttp.class)
-                .uri(String.format("http://localhost:%d/api/employee/update/%d", port, storedEmployee.getId()))
+                .urif("http://localhost:%d/api/employee/update/%d", port, storedEmployee.getId())
                 .body(editEmployee)
                 .patch()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .apply(response -> {
+                .accept(response -> {
                     Assertions.assertNotNull(response.getBody(EmployeeEntity.class).getName());
                     Assertions.assertEquals("Sergei",  response.getBody(EmployeeEntity.class).getName());
                     Assertions.assertEquals(editEmployee.getTitle(), response.getBody(EmployeeEntity.class).getTitle());
@@ -104,7 +104,7 @@ public class ApplicationTests {
     @Order(6)
     public void testDeleteEmployee() {
         MercuryIT.request(MercuryITHttp.class)
-                .uri(String.format("http://localhost:%d/api/employee/delete/%d", port, storedEmployee.getId()))
+                .urif("http://localhost:%d/api/employee/delete/%d", port, storedEmployee.getId())
                 .delete()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .assertion(MercuryITHttpResponse::getBody).isEmpty();
