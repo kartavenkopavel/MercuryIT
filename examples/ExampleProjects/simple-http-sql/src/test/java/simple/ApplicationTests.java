@@ -7,7 +7,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -45,8 +44,8 @@ public class ApplicationTests {
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response ->
-                    Assertions.assertArrayEquals(new EmployeeEntity[]{storedEmployee},
-                            response.getBody(EmployeeEntity[].class))
+                        Assertions.assertArrayEquals(new EmployeeEntity[]{storedEmployee},
+                                response.getBody(EmployeeEntity[].class))
                 );
     }
 
@@ -58,7 +57,7 @@ public class ApplicationTests {
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response ->
-                    Assertions.assertEquals(storedEmployee, response.getBody(EmployeeEntity.class))
+                        Assertions.assertEquals(storedEmployee, response.getBody(EmployeeEntity.class))
                 );
     }
 
