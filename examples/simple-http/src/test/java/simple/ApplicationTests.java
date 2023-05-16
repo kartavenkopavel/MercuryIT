@@ -1,4 +1,4 @@
-package simple;
+package java.simple;
 
 import community.redrover.mercuryit.MercuryIT;
 import community.redrover.mercuryit.MercuryITHttp;
