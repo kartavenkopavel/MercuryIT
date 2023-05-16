@@ -39,9 +39,9 @@ public class ApplicationTests {
         }
     }
 
-    private int port = 8080;
+    private final static int PORT = 8080;
 
-    private final EmployeeEntity storedEmployee = EmployeeEntity.builder()
+    private final static EmployeeEntity STORED_EMPLOYEE = EmployeeEntity.builder()
             .name("Pavel")
             .title("QA")
             .build();
@@ -50,21 +50,21 @@ public class ApplicationTests {
     @Order(1)
     public void testCreateEmployee() throws ClassNotFoundException {
         MercuryIT.request(MercuryITHttp.class)
-                .urif("http://localhost:%d/api/employee/create", port)
-                .body(storedEmployee)
+                .urif("http://localhost:%d/api/employee/create", PORT)
+                .body(STORED_EMPLOYEE)
                 .post()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response -> {
                     EmployeeEntity actualEmployee = response.getBody(EmployeeEntity.class);
-                    storedEmployee.setId(actualEmployee.getId());
-                    Assertions.assertEquals(storedEmployee, actualEmployee);
+                    STORED_EMPLOYEE.setId(actualEmployee.getId());
+                    Assertions.assertEquals(STORED_EMPLOYEE, actualEmployee);
                 });
 
-        EmployeeEntity employee = null;
+        EmployeeEntity employee;
 
         Class.forName("org.h2.Driver");
         try (Connection conn = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
-            String sql =  "SELECT count(*) as cnt  FROM EMPLOYEE_ENTITY  WHERE ID = "+ storedEmployee.getId();
+            String sql =  "SELECT count(*) as cnt  FROM EMPLOYEE_ENTITY  WHERE ID = "+ STORED_EMPLOYEE.getId();
             ResultSet rs = conn.createStatement().executeQuery(sql);
 
             rs.next();
@@ -73,7 +73,7 @@ public class ApplicationTests {
 
             Assertions.assertEquals(1, count);
 
-            sql =  "SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + storedEmployee.getId();
+            sql =  "SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + STORED_EMPLOYEE.getId();
             rs = conn.createStatement().executeQuery(sql);
 
             rs.next();
@@ -84,18 +84,18 @@ public class ApplicationTests {
             throw new RuntimeException("Unable to work with H2 database: " + e);
         }
 
-        Assertions.assertEquals(storedEmployee, employee);
+        Assertions.assertEquals(STORED_EMPLOYEE, employee);
     }
 
     @Test
     @Order(2)
     public void testGetListEmployees() {
         MercuryIT.request(MercuryITHttp.class)
-                .urif("http://localhost:%d/api/employee/list", port)
+                .urif("http://localhost:%d/api/employee/list", PORT)
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response ->
-                        Assertions.assertArrayEquals(new EmployeeEntity[]{storedEmployee},
+                        Assertions.assertArrayEquals(new EmployeeEntity[]{STORED_EMPLOYEE},
                                 response.getBody(EmployeeEntity[].class))
                 );
     }
@@ -104,11 +104,11 @@ public class ApplicationTests {
     @Order(3)
     public void testGetEmployeeById() {
         MercuryIT.request(MercuryITHttp.class)
-                .urif("http://localhost:%d/api/employee/%d", port, storedEmployee.getId())
+                .urif("http://localhost:%d/api/employee/%d", PORT, STORED_EMPLOYEE.getId())
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response ->
-                        Assertions.assertEquals(storedEmployee, response.getBody(EmployeeEntity.class))
+                        Assertions.assertEquals(STORED_EMPLOYEE, response.getBody(EmployeeEntity.class))
                 );
     }
 
@@ -116,12 +116,12 @@ public class ApplicationTests {
     @Order(4)
     public void testEditEmployee() {
         EmployeeEntity editEmployee = EmployeeEntity.builder()
-                .id(storedEmployee.getId())
+                .id(STORED_EMPLOYEE.getId())
                 .name("Sergei")
                 .build();
 
         MercuryIT.request(MercuryITHttp.class)
-                .urif("http://localhost:%d/api/employee/edit", port)
+                .urif("http://localhost:%d/api/employee/edit", PORT)
                 .body(editEmployee)
                 .put()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
@@ -139,7 +139,7 @@ public class ApplicationTests {
                 .build();
 
         MercuryIT.request(MercuryITHttp.class)
-                .urif("http://localhost:%d/api/employee/update/%d", port, storedEmployee.getId())
+                .urif("http://localhost:%d/api/employee/update/%d", PORT, STORED_EMPLOYEE.getId())
                 .body(editEmployee)
                 .patch()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
@@ -154,7 +154,7 @@ public class ApplicationTests {
     @Order(6)
     public void testDeleteEmployee() {
         MercuryIT.request(MercuryITHttp.class)
-                .urif("http://localhost:%d/api/employee/delete/%d", port, storedEmployee.getId())
+                .urif("http://localhost:%d/api/employee/delete/%d", PORT, STORED_EMPLOYEE.getId())
                 .delete()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .assertion(MercuryITHttpResponse::getBody).isEmpty();
