@@ -4,17 +4,42 @@ import community.redrover.mercuryit.MercuryIT;
 import community.redrover.mercuryit.MercuryITHttp;
 import community.redrover.mercuryit.MercuryITHttpResponse;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Properties;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ApplicationTests {
 
-    @LocalServerPort
-    private int port;
+    private static final String DB_CONNECTION_STR;
+    private static final String DB_USER;
+    private static final String DB_PASSWORD;
+
+    static {
+        String resourceName = "application.properties";
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        Properties properties = new Properties();
+
+        try(InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
+
+            properties.load(resourceStream);
+
+            DB_CONNECTION_STR = properties.getProperty("spring.datasource.url");
+            DB_USER = properties.getProperty("spring.datasource.username");
+            DB_PASSWORD = properties.getProperty("spring.datasource.password", "");
+            System.out.println(DB_CONNECTION_STR + " user:" + DB_USER + " password:[" + DB_PASSWORD + "]");
+        } catch (IOException ioException) {
+            throw new RuntimeException("Unable to load from application.properties " + ioException);
+        }
+    }
+
+    private int port = 8080;
 
     private final EmployeeEntity storedEmployee = EmployeeEntity.builder()
             .name("Pavel")
@@ -23,7 +48,7 @@ public class ApplicationTests {
 
     @Test
     @Order(1)
-    public void testCreateEmployee() {
+    public void testCreateEmployee() throws ClassNotFoundException {
         MercuryIT.request(MercuryITHttp.class)
                 .urif("http://localhost:%d/api/employee/create", port)
                 .body(storedEmployee)
@@ -34,6 +59,32 @@ public class ApplicationTests {
                     storedEmployee.setId(actualEmployee.getId());
                     Assertions.assertEquals(storedEmployee, actualEmployee);
                 });
+
+        EmployeeEntity employee = null;
+
+        Class.forName("org.h2.Driver");
+        try (Connection conn = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
+            String sql =  "SELECT count(*) as cnt  FROM EMPLOYEE_ENTITY  WHERE ID = "+ storedEmployee.getId();
+            ResultSet rs = conn.createStatement().executeQuery(sql);
+
+            rs.next();
+            int count = rs.getInt("cnt");
+            rs.close();
+
+            Assertions.assertEquals(1, count);
+
+            sql =  "SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + storedEmployee.getId();
+            rs = conn.createStatement().executeQuery(sql);
+
+            rs.next();
+            employee = new EmployeeEntity(rs.getLong("id"), rs.getString("name"), rs.getString("title"));
+
+            rs.close();
+        } catch (SQLException e) {
+            throw new RuntimeException("Unable to work with H2 database: " + e);
+        }
+
+        Assertions.assertEquals(storedEmployee, employee);
     }
 
     @Test
