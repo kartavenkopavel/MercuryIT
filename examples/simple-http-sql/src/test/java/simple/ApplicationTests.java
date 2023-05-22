@@ -26,14 +26,13 @@ public class ApplicationTests {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Properties properties = new Properties();
 
-        try(InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
+        try (InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
 
             properties.load(resourceStream);
 
             DB_CONNECTION_STR = properties.getProperty("spring.datasource.url");
             DB_USER = properties.getProperty("spring.datasource.username");
             DB_PASSWORD = properties.getProperty("spring.datasource.password", "");
-            System.out.println(DB_CONNECTION_STR + " user:" + DB_USER + " password:[" + DB_PASSWORD + "]");
         } catch (IOException ioException) {
             throw new RuntimeException("Unable to load from application.properties " + ioException);
         }
@@ -64,7 +63,7 @@ public class ApplicationTests {
 
         Class.forName("org.h2.Driver");
         try (Connection conn = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
-            String sql =  "SELECT count(*) as cnt  FROM EMPLOYEE_ENTITY  WHERE ID = "+ STORED_EMPLOYEE.getId();
+            String sql = "SELECT count(*) as cnt  FROM EMPLOYEE_ENTITY  WHERE ID = " + STORED_EMPLOYEE.getId();
             ResultSet rs = conn.createStatement().executeQuery(sql);
 
             rs.next();
@@ -73,7 +72,7 @@ public class ApplicationTests {
 
             Assertions.assertEquals(1, count);
 
-            sql =  "SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + STORED_EMPLOYEE.getId();
+            sql = "SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + STORED_EMPLOYEE.getId();
             rs = conn.createStatement().executeQuery(sql);
 
             rs.next();
@@ -114,7 +113,7 @@ public class ApplicationTests {
 
     @Test
     @Order(4)
-    public void testEditEmployee() {
+    public void testEditEmployee() throws ClassNotFoundException {
         EmployeeEntity editEmployee = EmployeeEntity.builder()
                 .id(STORED_EMPLOYEE.getId())
                 .name("Sergei")
@@ -129,11 +128,30 @@ public class ApplicationTests {
                     Assertions.assertNull(response.getBody(EmployeeEntity.class).getTitle());
                     Assertions.assertEquals(editEmployee, response.getBody(EmployeeEntity.class));
                 });
+
+        EmployeeEntity employee;
+
+        Class.forName("org.h2.Driver");
+        try (Connection conn = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
+
+            String sql = "SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + STORED_EMPLOYEE.getId();
+            ResultSet rs = conn.createStatement().executeQuery(sql);
+
+            rs.next();
+            employee = new EmployeeEntity(rs.getLong("id"), rs.getString("name"), rs.getString("title"));
+
+            rs.close();
+        } catch (SQLException e) {
+            throw new RuntimeException("Unable to work with H2 database: " + e);
+        }
+
+        Assertions.assertNull(employee.getTitle());
+        Assertions.assertEquals(editEmployee, employee);
     }
 
     @Test
     @Order(5)
-    public void testUpdateEmployee() {
+    public void testUpdateEmployee() throws ClassNotFoundException {
         EmployeeEntity editEmployee = EmployeeEntity.builder()
                 .title("Developer")
                 .build();
@@ -145,18 +163,53 @@ public class ApplicationTests {
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response -> {
                     Assertions.assertNotNull(response.getBody(EmployeeEntity.class).getName());
-                    Assertions.assertEquals("Sergei",  response.getBody(EmployeeEntity.class).getName());
+                    Assertions.assertEquals("Sergei", response.getBody(EmployeeEntity.class).getName());
                     Assertions.assertEquals(editEmployee.getTitle(), response.getBody(EmployeeEntity.class).getTitle());
                 });
+
+        EmployeeEntity employee;
+
+        Class.forName("org.h2.Driver");
+        try (Connection conn = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
+
+            String sql = "SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + STORED_EMPLOYEE.getId();
+            ResultSet rs = conn.createStatement().executeQuery(sql);
+
+            rs.next();
+            employee = new EmployeeEntity(rs.getLong("id"), rs.getString("name"), rs.getString("title"));
+
+            rs.close();
+        } catch (SQLException e) {
+            throw new RuntimeException("Unable to work with H2 database: " + e);
+        }
+
+        Assertions.assertEquals("Sergei", employee.getName());
+        Assertions.assertEquals(editEmployee.getTitle(), employee.getTitle());
     }
 
     @Test
     @Order(6)
-    public void testDeleteEmployee() {
+    public void testDeleteEmployee() throws ClassNotFoundException {
         MercuryIT.request(MercuryITHttp.class)
                 .urif("http://localhost:%d/api/employee/delete/%d", PORT, STORED_EMPLOYEE.getId())
                 .delete()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .assertion(MercuryITHttpResponse::getBody).isEmpty();
+
+        Class.forName("org.h2.Driver");
+        try (Connection conn = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
+
+            String sql = "SELECT count(*) as cnt  FROM EMPLOYEE_ENTITY  WHERE ID = " + STORED_EMPLOYEE.getId();
+            ResultSet rs = conn.createStatement().executeQuery(sql);
+
+            rs.next();
+            int count = rs.getInt("cnt");
+            rs.close();
+
+            Assertions.assertEquals(0, count);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Unable to work with H2 database: " + e);
+        }
     }
 }
