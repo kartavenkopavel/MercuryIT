@@ -5,7 +5,8 @@ import community.redrover.mercuryit.MercuryITHttp;
 import community.redrover.mercuryit.MercuryITHttpResponse;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -47,11 +49,21 @@ public class ApplicationTests {
             .build();
 
     private static final List<EmployeeEntity> listOfEmployees = new ArrayList<>();
-    private static EmployeeEntity STORED_EMPLOYEE_1 = new EmployeeEntity();
+    private static EmployeeEntity STORED_EMPLOYEE_1;
+
+    private static Stream<Arguments> getSourceData() {
+        return Stream.of(
+                Arguments.of("John", "SDET"),
+                Arguments.of("Jane", "DEV"),
+                Arguments.of("Alice", "QA lead"),
+                Arguments.of("Bob", "PM"),
+                Arguments.of("Charlie", "Engineer")
+        );
+    }
 
     @ParameterizedTest
     @Order(1)
-    @CsvSource({"John, SDET", "Jane, DEV", "Alice, QA lead", "Bob, PM", "Charlie, Engineer"})
+    @MethodSource("getSourceData")
     public void testCreateListOfEmployees(String name, String title) throws ClassNotFoundException {
 
         STORED_EMPLOYEE_1 = EmployeeEntity.builder()
