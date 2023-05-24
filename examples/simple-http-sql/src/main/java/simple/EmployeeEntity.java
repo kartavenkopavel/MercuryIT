@@ -14,7 +14,6 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@ToString
 public class EmployeeEntity {
 
     public static final String ID_FIELD = "id";
