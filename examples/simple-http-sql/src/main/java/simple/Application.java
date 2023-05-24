@@ -12,6 +12,7 @@ import java.sql.SQLException;
 @SpringBootApplication
 @EntityScan(basePackages = "simple")
 public class Application {
+
     public static void main(String[] args) {
         try {
 // you may need this if want to connect to db from SQL IDE like DBeaver
