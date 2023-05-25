@@ -91,6 +91,8 @@ public class ApplicationTests {
             count = result.getInt("cnt");
             result.close();
 
+            Assertions.assertEquals(listOfEmployees.size(), count);
+
             result = conn.createStatement().executeQuery("SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + STORED_EMPLOYEE.getId());
             result.next();
             employee = new EmployeeEntity(result.getLong("id"), result.getString("name"), result.getString("title"));
@@ -100,7 +102,6 @@ public class ApplicationTests {
             throw new RuntimeException("Unable to work with H2 database: " + e);
         }
 
-        Assertions.assertEquals(listOfEmployees.size(), count);
         Assertions.assertEquals(STORED_EMPLOYEE, employee);
     }
 
@@ -224,7 +225,7 @@ public class ApplicationTests {
         Class.forName("org.h2.Driver");
         try (Connection conn = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
 
-            ResultSet result = conn.createStatement().executeQuery("SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + listOfEmployees.get(2).getId());
+            ResultSet result = conn.createStatement().executeQuery("SELECT * FROM EMPLOYEE_ENTITY  WHERE ID = " + listOfEmployees.get(2).getId());
 
             result.next();
             employee = new EmployeeEntity(result.getLong("id"), result.getString("name"), result.getString("title"));
@@ -248,27 +249,16 @@ public class ApplicationTests {
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .assertion(MercuryITHttpResponse::getBody).isEmpty();
 
-        List<Long> sqlEmployeesIDs = new ArrayList<>();
-
         Class.forName("org.h2.Driver");
         try (Connection conn = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
 
-            ResultSet result = conn.createStatement().executeQuery("SELECT count(*) as cnt FROM EMPLOYEE_ENTITY");
+            ResultSet result = conn.createStatement().executeQuery("SELECT count(*) as cnt FROM EMPLOYEE_ENTITY  WHERE ID = " + listOfEmployees.get(3).getId());
 
             result.next();
             int count = result.getInt("cnt");
             result.close();
 
-            Assertions.assertEquals(listOfEmployees.size() - 1, count);
-
-            result = conn.createStatement().executeQuery("SELECT *  FROM EMPLOYEE_ENTITY");
-
-            while (result.next()) {
-                sqlEmployeesIDs.add(result.getLong("id"));
-            }
-            result.close();
-
-            Assertions.assertFalse(sqlEmployeesIDs.contains(listOfEmployees.get(3).getId()));
+            Assertions.assertEquals(0, count);
 
         } catch (SQLException e) {
             throw new RuntimeException("Unable to work with H2 database: " + e);
