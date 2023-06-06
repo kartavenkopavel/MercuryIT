@@ -11,5 +11,5 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>simple-http</artifactId>
+    <artifactId>simple-http-sql</artifactId>
 </project>
