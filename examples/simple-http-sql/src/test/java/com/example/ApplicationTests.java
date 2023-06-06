@@ -1,4 +1,4 @@
-package simple;
+package com.example;
 
 import community.redrover.mercuryit.MercuryIT;
 import community.redrover.mercuryit.MercuryITHttp;
@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ApplicationTests {
 
+    private static final int PORT = 8080;
     private static final String DB_CONNECTION_STR;
     private static final String DB_USER;
     private static final String DB_PASSWORD;
@@ -41,15 +42,16 @@ public class ApplicationTests {
         }
     }
 
-    private final static int PORT = 8080;
-    private final static List<EmployeeEntity> LIST_OF_EMPLOYEES = new ArrayList<>();
+    private static EmployeeEntity storedEmployee = new EmployeeEntity();
+
+    private static List<EmployeeEntity> employeesList = new ArrayList<>();
 
     private static Stream<Arguments> employeesData() {
         return Stream.of(
                 Arguments.of("Yuliya", "SDET"),
                 Arguments.of("Inna", "DEV"),
                 Arguments.of("Lena", "QA lead"),
-                Arguments.of("Irina", "SDET"),
+                Arguments.of("Ira", "SDET"),
                 Arguments.of("Liudmila", "PM"),
                 Arguments.of("Viktoriya", "QA Engineer"),
                 Arguments.of("Dmitry", "QA Engineer"),
@@ -61,35 +63,34 @@ public class ApplicationTests {
     @MethodSource("employeesData")
     @Order(1)
     public void testCreateListOfEmployees(String name, String title) throws ClassNotFoundException {
-        EmployeeEntity storedEmployee = EmployeeEntity.builder()
+        EmployeeEntity initialEmployee = EmployeeEntity.builder()
                 .name(name)
                 .title(title)
                 .build();
 
         MercuryIT.request(MercuryITHttp.class)
                 .urif("http://localhost:%d/api/employee/create", PORT)
-                .body(storedEmployee)
+                .body(initialEmployee)
                 .post()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response -> {
                     EmployeeEntity actualEmployee = response.getBody(EmployeeEntity.class);
-                    storedEmployee.setId(actualEmployee.getId());
-                    Assertions.assertEquals(storedEmployee, actualEmployee);
+                    initialEmployee.setId(actualEmployee.getId());
+                    Assertions.assertEquals(initialEmployee, actualEmployee);
                 })
-                .accept(response -> {
-                    LIST_OF_EMPLOYEES.add(storedEmployee);
-                    System.out.println(LIST_OF_EMPLOYEES);
-                });
+                .accept(response ->
+                    employeesList.add(initialEmployee)
+                );
 
         Class.forName("org.h2.Driver");
         try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
 
-            ResultSet result = connection.createStatement().executeQuery("SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + storedEmployee.getId());
+            ResultSet result = connection.createStatement().executeQuery("SELECT * FROM EMPLOYEE_ENTITY WHERE ID = " + initialEmployee.getId());
             result.next();
             EmployeeEntity sqlResultEmployee = new EmployeeEntity(result.getLong("id"), result.getString("name"), result.getString("title"));
             result.close();
 
-            Assertions.assertEquals(storedEmployee, sqlResultEmployee);
+            Assertions.assertEquals(initialEmployee, sqlResultEmployee);
 
         } catch (SQLException e) {
             throw new RuntimeException("Unable to work with H2 database: " + e);
@@ -98,19 +99,17 @@ public class ApplicationTests {
 
     @Test
     @Order(2)
-    public void testGetListEmployees() throws ClassNotFoundException {
-
+    public void testGetListOfEmployees() throws ClassNotFoundException {
         MercuryIT.request(MercuryITHttp.class)
                 .urif("http://localhost:%d/api/employee/list", PORT)
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response ->
-                        Assertions.assertArrayEquals(LIST_OF_EMPLOYEES.toArray(EmployeeEntity[]::new),
+                        Assertions.assertArrayEquals(employeesList.toArray(EmployeeEntity[]::new),
                                 response.getBody(EmployeeEntity[].class))
                 );
 
-        EmployeeEntity sqlResultEmployee;
-        List<EmployeeEntity> sqlEmployees = new ArrayList<>();
+        List<EmployeeEntity> sqlResultEmployees = new ArrayList<>();
 
         Class.forName("org.h2.Driver");
         try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
@@ -118,60 +117,61 @@ public class ApplicationTests {
             ResultSet result = connection.createStatement().executeQuery("SELECT * FROM EMPLOYEE_ENTITY");
 
             while (result.next()) {
-                sqlResultEmployee = new EmployeeEntity(result.getLong("id"), result.getString("name"), result.getString("title"));
-                sqlEmployees.add(sqlResultEmployee);
+                sqlResultEmployees.add(new EmployeeEntity(result.getLong("id"), result.getString("name"), result.getString("title")));
             }
             result.close();
 
-            Assertions.assertEquals(LIST_OF_EMPLOYEES, sqlEmployees);
+            Assertions.assertEquals(employeesList, sqlResultEmployees);
 
         } catch (SQLException e) {
             throw new RuntimeException("Unable to work with H2 database: " + e);
         }
-
     }
 
     @Test
     @Order(3)
     public void testGetEmployeeById() {
+        storedEmployee = employeesList.get(3);
 
         MercuryIT.request(MercuryITHttp.class)
-                .urif("http://localhost:%d/api/employee/%d", PORT, LIST_OF_EMPLOYEES.get(3).getId())
+                .urif("http://localhost:%d/api/employee/%d", PORT, storedEmployee.getId())
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response ->
-                        Assertions.assertEquals(LIST_OF_EMPLOYEES.get(3), response.getBody(EmployeeEntity.class))
+                        Assertions.assertEquals(storedEmployee, response.getBody(EmployeeEntity.class))
                 );
     }
 
     @Test
     @Order(4)
     public void testEditEmployee() throws ClassNotFoundException {
-
-        EmployeeEntity editEmployee = EmployeeEntity.builder()
-                .id(LIST_OF_EMPLOYEES.get(2).getId())
-                .name("Elena")
+        EmployeeEntity initialEmployee = EmployeeEntity.builder()
+                .id(storedEmployee.getId())
+                .name("Irina")
                 .build();
 
         MercuryIT.request(MercuryITHttp.class)
                 .urif("http://localhost:%d/api/employee/edit", PORT)
-                .body(editEmployee)
+                .body(initialEmployee)
                 .put()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response ->
-                    Assertions.assertEquals(editEmployee, response.getBody(EmployeeEntity.class))
+                    Assertions.assertEquals(initialEmployee, response.getBody(EmployeeEntity.class))
+                )
+                .accept(response ->
+                    storedEmployee.setName(initialEmployee.getName())
                 );
 
         Class.forName("org.h2.Driver");
         try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
 
-            ResultSet result = connection.createStatement().executeQuery("SELECT *  FROM EMPLOYEE_ENTITY  WHERE ID = " + LIST_OF_EMPLOYEES.get(2).getId());
+            ResultSet result = connection.createStatement().executeQuery("SELECT * FROM EMPLOYEE_ENTITY WHERE ID = " + storedEmployee.getId());
 
             result.next();
             EmployeeEntity sqlResultEmployee = new EmployeeEntity(result.getLong("id"), result.getString("name"), result.getString("title"));
             result.close();
 
-        Assertions.assertEquals(editEmployee, sqlResultEmployee);
+            Assertions.assertEquals(initialEmployee, sqlResultEmployee);
 
         } catch (SQLException e) {
             throw new RuntimeException("Unable to work with H2 database: " + e);
@@ -181,32 +181,32 @@ public class ApplicationTests {
     @Test
     @Order(5)
     public void testUpdateEmployee() throws ClassNotFoundException {
-        EmployeeEntity editEmployee = EmployeeEntity.builder()
+        EmployeeEntity initialEmployee = EmployeeEntity.builder()
                 .title("Project Manager")
                 .build();
 
         MercuryIT.request(MercuryITHttp.class)
-                .urif("http://localhost:%d/api/employee/update/%d", PORT, LIST_OF_EMPLOYEES.get(5).getId())
-                .body(editEmployee)
+                .urif("http://localhost:%d/api/employee/update/%d", PORT, storedEmployee.getId())
+                .body(initialEmployee)
                 .patch()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .accept(response -> {
-                    Assertions.assertEquals(LIST_OF_EMPLOYEES.get(5).getName(), response.getBody(EmployeeEntity.class).getName());
-                    Assertions.assertEquals(LIST_OF_EMPLOYEES.get(5).getId(), response.getBody(EmployeeEntity.class).getId());
-                    Assertions.assertEquals(editEmployee.getTitle(), response.getBody(EmployeeEntity.class).getTitle());
+                    EmployeeEntity httpResponseEmployee = response.getBody(EmployeeEntity.class);
+                    Assertions.assertEquals(storedEmployee.getName(), httpResponseEmployee.getName());
+                    Assertions.assertEquals(initialEmployee.getTitle(), httpResponseEmployee.getTitle());
                 });
 
         Class.forName("org.h2.Driver");
         try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
 
-            ResultSet result = connection.createStatement().executeQuery("SELECT * FROM EMPLOYEE_ENTITY  WHERE ID = " + LIST_OF_EMPLOYEES.get(5).getId());
+            ResultSet result = connection.createStatement().executeQuery("SELECT * FROM EMPLOYEE_ENTITY WHERE ID = " + storedEmployee.getId());
 
             result.next();
             EmployeeEntity sqlResultEmployee = new EmployeeEntity(result.getLong("id"), result.getString("name"), result.getString("title"));
             result.close();
 
-        Assertions.assertNotNull(sqlResultEmployee.getName());
-        Assertions.assertEquals(editEmployee.getTitle(), sqlResultEmployee.getTitle());
+            Assertions.assertEquals(storedEmployee.getName(), sqlResultEmployee.getName());
+            Assertions.assertEquals(initialEmployee.getTitle(), sqlResultEmployee.getTitle());
 
         } catch (SQLException e) {
             throw new RuntimeException("Unable to work with H2 database: " + e);
@@ -216,9 +216,8 @@ public class ApplicationTests {
     @Test
     @Order(6)
     public void testDeleteEmployeeByID() throws ClassNotFoundException {
-
         MercuryIT.request(MercuryITHttp.class)
-                .urif("http://localhost:%d/api/employee/delete/%d", PORT, LIST_OF_EMPLOYEES.get(3).getId())
+                .urif("http://localhost:%d/api/employee/delete/%d", PORT, storedEmployee.getId())
                 .delete()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
                 .assertion(MercuryITHttpResponse::getBody).isEmpty();
@@ -226,39 +225,10 @@ public class ApplicationTests {
         Class.forName("org.h2.Driver");
         try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
 
-            ResultSet result = connection.createStatement().executeQuery("SELECT count(*) as numberOfEmployees FROM EMPLOYEE_ENTITY  WHERE ID = " + LIST_OF_EMPLOYEES.get(3).getId());
+            ResultSet result = connection.createStatement().executeQuery("SELECT COUNT(*) AS NUMBERS_OF_EMPLOYEES FROM EMPLOYEE_ENTITY WHERE ID = " + storedEmployee.getId());
 
             result.next();
-            int count = result.getInt("numberOfEmployees");
-            result.close();
-
-            Assertions.assertEquals(0, count);
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Unable to work with H2 database: " + e);
-        }
-
-        LIST_OF_EMPLOYEES.remove(LIST_OF_EMPLOYEES.get(3));
-    }
-
-    @Test
-    @Order(7)
-    public void testDeleteListOfEmployees() throws ClassNotFoundException {
-
-        for (EmployeeEntity employee : LIST_OF_EMPLOYEES) {
-            MercuryIT.request(MercuryITHttp.class)
-                    .urif("http://localhost:%d/api/employee/delete/%d", PORT, employee.getId())
-                    .delete()
-                    .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                    .assertion(MercuryITHttpResponse::getBody).isEmpty();
-        }
-
-        Class.forName("org.h2.Driver");
-        try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STR, DB_USER, DB_PASSWORD)) {
-            ResultSet result = connection.createStatement().executeQuery("SELECT count(*) as numberOfEmployees FROM EMPLOYEE_ENTITY");
-
-            result.next();
-            int count = result.getInt("numberOfEmployees");
+            int count = result.getInt("NUMBERS_OF_EMPLOYEES");
             result.close();
 
             Assertions.assertEquals(0, count);
