@@ -1,4 +1,4 @@
-package simple;
+package com.example;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/employee")
+@RequestMapping("api/employee")
 public class EmployeeController {
 
     @Autowired

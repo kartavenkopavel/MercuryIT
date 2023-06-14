@@ -1,4 +1,4 @@
-package simple;
+package com.example;
 
 import lombok.*;
 

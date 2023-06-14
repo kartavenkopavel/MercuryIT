@@ -34,4 +34,4 @@ jobs:
         run: mvn install
 
       - name: Test artifacts
-        run: mvn -f examples/simple-http/pom.xml test
+        run: mvn -f examples/pom.xml test
