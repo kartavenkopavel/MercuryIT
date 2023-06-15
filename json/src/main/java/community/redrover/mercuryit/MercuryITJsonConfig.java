@@ -1,37 +1,80 @@
 package community.redrover.mercuryit;
 
-import com.google.gson.Gson;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import lombok.*;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-@Builder(toBuilder = true)
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-public class MercuryITJsonConfig extends MercuryITConfig<MercuryITJsonConfig.MercuryITJsonConfigBuilder> {
 
-    private static final Gson gson = new Gson();
+@SuppressWarnings("unchecked")
+public class MercuryITJsonConfig extends MercuryITConfig {
 
-    @Builder.Default
-    private BiFunction<String, Class<?>, ?> fromJson = gson::fromJson;
+    private static class JsonJackson {
 
-    @Builder.Default
-    private Function<Object, String> toJson = gson::toJson;
+        private final ObjectMapper objectMapper = JsonMapper.builder()
+                    .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .build();
+
+        public <T> T fromMap(Map<String, Object> map, Class<T> clazz) {
+            return objectMapper.convertValue(map, clazz);
+        }
+
+        @SneakyThrows
+        public <T> T fromJson(String json, Class<T> clazz) {
+            return objectMapper.readValue(json, clazz);
+        }
+
+        @SneakyThrows
+        public String toJson(Object object) {
+            return objectMapper.writeValueAsString(object);
+        }
+    }
+
+    private BiFunction<Map<String, Object>, Class<?>, ?> fromMap;
+
+    private BiFunction<String, Class<?>, ?> fromJson;
+
+    private Function<Object, String> toJson;
+
+    MercuryITJsonConfig(MercuryITConfigHolder configHolder) {
+        super(configHolder);
+
+        JsonJackson defaultJson = new JsonJackson();
+
+        this.fromMap = defaultJson::fromMap;
+        this.fromJson = defaultJson::fromJson;
+        this.toJson = defaultJson::toJson;
+    }
+
+    @Builder(toBuilder = true)
+    MercuryITJsonConfig(MercuryITConfigHolder configHolder, BiFunction<Map<String, Object>, Class<?>, ?> fromMap, BiFunction<String, Class<?>, ?> fromJson, Function<Object, String> toJson) {
+        this(configHolder);
+
+        this.fromMap = fromMap;
+        this.fromJson = fromJson;
+        this.toJson = toJson;
+    }
+
+    @Override
+    protected MercuryITConfig copy(MercuryITConfigHolder configHolder) {
+        return this.toBuilder().configHolder(configHolder).build();
+    }
+
+    public <T> T fromMap(Map<String, Object> map, Class<T> clazz) {
+        return (T) fromMap.apply(map, clazz);
+    }
 
     public <T> T fromJson(String json, Class<T> clazz) {
-        return (T)fromJson.apply(json, clazz);
+        return (T) fromJson.apply(json, clazz);
     }
 
     public String toJson(Object object) {
         return toJson.apply(object);
-    }
-
-    @Override
-    public MercuryITConfig<MercuryITJsonConfigBuilder> copy() {
-        return this.toBuilder().build();
     }
 }

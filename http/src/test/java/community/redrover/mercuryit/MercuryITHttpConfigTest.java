@@ -17,6 +17,6 @@ public class MercuryITHttpConfigTest {
     public void testConfigFromFile() {
         Assertions.assertEquals(
                 EXPECTED_HEADER_MAP,
-                MercuryIT.config(MercuryITHttpConfig.class).header());
+                MercuryIT.config(MercuryITHttpConfig.class).getHeader());
     }
 }

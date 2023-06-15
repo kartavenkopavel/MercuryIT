@@ -12,7 +12,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.example</groupId>
+    <groupId>community.redrover.mercuryit.example</groupId>
     <artifactId>example-pom</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
@@ -27,6 +27,8 @@
         <maven.compiler.target>11</maven.compiler.target>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <release.version>0.1.2</release.version>
     </properties>
 
     <repositories>
@@ -63,23 +65,37 @@
             <scope>provided</scope>
         </dependency>
 
-<!--    This is dependency from the global repository -->
+<!-- These are dependencies from the global repository -->
+<!-- global dependencies start -->
         <dependency>
             <groupId>com.github.RedRoverCommunity.MercuryIT</groupId>
             <artifactId>mercuryit-http</artifactId>
-            <version>0.1.2</version>
+            <version>${release.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.RedRoverCommunity.MercuryIT</groupId>
+            <artifactId>mercuryit-sql</artifactId>
+            <version>${release.version}</version>
+            <scope>test</scope>
+        </dependency>
+<!-- global dependencies stop -->
 
-<!--    Next dependency is from local repository. If you want to use it you should run 'mvn install' for MercuryIT project -->
-<!--
+<!-- These are dependencies from the local repository. If you want to use it you should run 'mvn install' for MercuryIT project -->
+<!-- local dependencies start
         <dependency>
             <groupId>community.redrover.mercuryit</groupId>
             <artifactId>mercuryit-http</artifactId>
             <version>dev</version>
             <scope>test</scope>
         </dependency>
--->
+        <dependency>
+            <groupId>community.redrover.mercuryit</groupId>
+            <artifactId>mercuryit-sql</artifactId>
+            <version>dev</version>
+            <scope>test</scope>
+        </dependency>
+local dependencies stop -->
     </dependencies>
 
     <build>
