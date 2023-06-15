@@ -4,45 +4,38 @@ import lombok.*;
 
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
-@Builder(toBuilder = true)
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class MercuryITHttpConfig extends MercuryITConfig<MercuryITHttpConfig.MercuryITHttpConfigBuilder> {
+@Getter
+public class MercuryITHttpConfig extends MercuryITConfig {
 
-    public static final String CONFIG_NAME = "http";
+    static final String CONFIG_NAME = "http";
 
-    public static final String HEADER_NAME = "header";
-
-    @Singular("header")
     private Map<String, String> header;
 
-    MercuryITHttpConfig() {
+    MercuryITHttpConfig(MercuryITConfigHolder configHolder) {
+        super(configHolder);
         this.header = new TreeMap<>(
-                configuration().getList(name(APP_NAME, CONFIG_NAME, HEADER_NAME)).stream()
+                configuration().getList(name(APP_NAME, CONFIG_NAME, "header")).stream()
                         .map(Object::toString)
                         .map(line -> line.split("="))
                         .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1])));
     }
 
-    public MercuryITHttpConfig header(String name, String value) {
-        header.put(name, value);
-        return this;
-    }
-
-    public MercuryITHttpConfig header(Function<Map<String, String>, Map<String, String>> headerFunction) {
-        header = headerFunction.apply(header);
-        return this;
-    }
-
-    public Map<String, String> header() {
-        return header;
+    @Builder(toBuilder = true)
+    MercuryITHttpConfig(MercuryITConfigHolder configHolder, @Singular("header") Map<String, String> header) {
+        this(configHolder);
+        this.header = header;
     }
 
     @Override
-    public MercuryITConfig<MercuryITHttpConfigBuilder> copy() {
-        return this.toBuilder().build();
+    protected MercuryITConfig copy(MercuryITConfigHolder configHolder) {
+        return this.toBuilder().configHolder(configHolder).build();
+    }
+
+    public MercuryITHttpConfig header(String name, String value) {
+        header.put(name, value);
+        return this;
     }
 }

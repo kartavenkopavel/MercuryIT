@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 
 
+@SuppressWarnings("unchecked")
 public class MercuryITHttpTest {
 
     @Test
@@ -31,7 +32,7 @@ public class MercuryITHttpTest {
             Mockito.when(httpResponse.body()).thenReturn(responseBody);
 
             MercuryIT.request(MercuryITHttp.class)
-                    .uri(uri)
+                    .url(uri)
                     .get()
                     .assertion(MercuryITHttpResponse::getBody).equalsTo(responseBody);
 

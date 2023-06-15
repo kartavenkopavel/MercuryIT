@@ -3,7 +3,7 @@ package community.redrover.mercuryit;
 import java.net.http.HttpResponse;
 
 
-public class MercuryITHttpResponse extends MercuryITObject<MercuryITHttpResponse> {
+public class MercuryITHttpResponse extends MercuryITResponse<MercuryITHttpResponse> {
 
     private final HttpResponse<String> response;
 
@@ -21,6 +21,6 @@ public class MercuryITHttpResponse extends MercuryITObject<MercuryITHttpResponse
     }
 
     public <T> T getBody(Class<T> clazz) {
-        return  config(MercuryITJsonConfig.class).fromJson(getBody(), clazz);
+        return  getConfigHolder().config(MercuryITJsonConfig.class).fromJson(getBody(), clazz);
     }
 }
