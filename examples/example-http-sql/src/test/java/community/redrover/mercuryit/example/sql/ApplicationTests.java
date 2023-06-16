@@ -108,7 +108,7 @@ public class ApplicationTests {
 
     @Test
     @Order(4)
-    public void testEditEmployee() throws ClassNotFoundException {
+    public void testEditEmployee() {
         EmployeeEntity expectedEmployee = EmployeeEntity.builder()
                 .id(storedEmployee.getId())
                 .name(EMPLOYEE_NAME)
@@ -133,7 +133,7 @@ public class ApplicationTests {
 
     @Test
     @Order(5)
-    public void testUpdateEmployee() throws ClassNotFoundException {
+    public void testUpdateEmployee() {
         MercuryIT.request(MercuryITHttp.class)
                 .urlf("http://localhost:%d/api/employee/update/%d", port, storedEmployee.getId())
                 .body(Map.of("title", EMPLOYEE_TITLE))
@@ -162,7 +162,7 @@ public class ApplicationTests {
 
     @Test
     @Order(6)
-    public void testDeleteEmployee() throws ClassNotFoundException {
+    public void testDeleteEmployee() {
         MercuryIT.request(MercuryITHttp.class)
                 .urlf("http://localhost:%d/api/employee/delete/%d", port, storedEmployee.getId())
                 .delete()
