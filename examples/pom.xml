@@ -27,16 +27,56 @@
         <maven.compiler.target>11</maven.compiler.target>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <release.version>0.1.2</release.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <release.version>0.1.3</release.version>
+            </properties>
+            <repositories>
+                <repository>
+                    <id>jitpack.io</id>
+                    <url>https://jitpack.io</url>
+                </repository>
+            </repositories>
+            <dependencies>
+                <dependency>
+                    <groupId>com.github.RedRoverCommunity.MercuryIT</groupId>
+                    <artifactId>mercuryit-http</artifactId>
+                    <version>${release.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.github.RedRoverCommunity.MercuryIT</groupId>
+                    <artifactId>mercuryit-sql</artifactId>
+                    <version>${release.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>dev</id>
+            <dependencies>
+                <dependency>
+                    <groupId>community.redrover.mercuryit</groupId>
+                    <artifactId>mercuryit-http</artifactId>
+                    <version>dev</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>community.redrover.mercuryit</groupId>
+                    <artifactId>mercuryit-sql</artifactId>
+                    <version>dev</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
@@ -64,38 +104,6 @@
             <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
-
-<!-- These are dependencies from the global repository -->
-<!-- global dependencies start -->
-        <dependency>
-            <groupId>com.github.RedRoverCommunity.MercuryIT</groupId>
-            <artifactId>mercuryit-http</artifactId>
-            <version>${release.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.RedRoverCommunity.MercuryIT</groupId>
-            <artifactId>mercuryit-sql</artifactId>
-            <version>${release.version}</version>
-            <scope>test</scope>
-        </dependency>
-<!-- global dependencies stop -->
-
-<!-- These are dependencies from the local repository. If you want to use it you should run 'mvn install' for MercuryIT project -->
-<!-- local dependencies start
-        <dependency>
-            <groupId>community.redrover.mercuryit</groupId>
-            <artifactId>mercuryit-http</artifactId>
-            <version>dev</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>community.redrover.mercuryit</groupId>
-            <artifactId>mercuryit-sql</artifactId>
-            <version>dev</version>
-            <scope>test</scope>
-        </dependency>
-local dependencies stop -->
     </dependencies>
 
     <build>

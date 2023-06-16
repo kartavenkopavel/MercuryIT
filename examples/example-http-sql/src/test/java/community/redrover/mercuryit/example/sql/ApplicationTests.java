@@ -8,17 +8,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ApplicationTests {
@@ -29,30 +25,9 @@ public class ApplicationTests {
     @LocalServerPort
     private int port;
 
-    private static final String DB_CONNECTION_STR;
-    private static final String DB_USER;
-    private static final String DB_PASSWORD;
+    private EmployeeEntity storedEmployee = new EmployeeEntity();
 
-    static {
-        String resourceName = "application.properties";
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        Properties properties = new Properties();
-
-        try (InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
-
-            properties.load(resourceStream);
-
-            DB_CONNECTION_STR = properties.getProperty("spring.datasource.url");
-            DB_USER = properties.getProperty("spring.datasource.username");
-            DB_PASSWORD = properties.getProperty("spring.datasource.password", "");
-        } catch (IOException ioException) {
-            throw new RuntimeException("Unable to load from application.properties " + ioException);
-        }
-    }
-
-    private static EmployeeEntity storedEmployee = new EmployeeEntity();
-
-    private static List<EmployeeEntity> storedEmployeesList = new ArrayList<>();
+    private List<EmployeeEntity> storedEmployeesList = new ArrayList<>();
 
     private static Stream<Arguments> employeesData() {
         return Stream.of(

@@ -33,12 +33,5 @@ jobs:
       - name: Install artifacts
         run: mvn install
 
-      - name: Set version
-        run: |
-          sed -i -E "0,/<!-- global dependencies start -->/s//<!-- global dependencies start/g" ./examples/pom.xml
-          sed -i -E "0,/<!-- global dependencies stop -->/s//global dependencies stop -->/g" ./examples/pom.xml
-          sed -i -E "0,/<!-- local dependencies start/s//<!-- local dependencies start -->/g" ./examples/pom.xml
-          sed -i -E "0,/local dependencies stop -->/s//<!-- local dependencies stop -->/g" ./examples/pom.xml
-
       - name: Test artifacts
-        run: mvn -f examples/pom.xml test
+        run: mvn -f examples/pom.xml test -P dev
