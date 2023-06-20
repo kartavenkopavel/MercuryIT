@@ -5,13 +5,15 @@ import lombok.SneakyThrows;
 import java.sql.Connection;
 
 
-public class MercuryITSQLConnection extends MercuryITResponse<MercuryITSQLConnection> {
+public class MercuryITSQLConnection extends MercuryITResponseAutoCloseable<MercuryITSQLConnection> {
 
     private final Connection connection;
 
     MercuryITSQLConnection(MercuryITConfigHolder configHolder, Connection connection) {
         super(configHolder);
         this.connection = connection;
+
+        registerAutoCloseable(connection);
     }
 
     @SneakyThrows

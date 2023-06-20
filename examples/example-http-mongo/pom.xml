@@ -11,12 +11,17 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>example-http-sql</artifactId>
+    <artifactId>example-http-mongo</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo.spring27x</artifactId>
+            <version>4.7.0</version>
         </dependency>
     </dependencies>
 </project>

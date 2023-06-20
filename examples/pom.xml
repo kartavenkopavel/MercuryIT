@@ -20,6 +20,7 @@
     <modules>
         <module>example-http</module>
         <module>example-http-sql</module>
+        <module>example-http-mongo</module>
     </modules>
 
     <properties>
@@ -57,6 +58,12 @@
                     <version>${release.version}</version>
                     <scope>test</scope>
                 </dependency>
+                <dependency>
+                    <groupId>com.github.RedRoverCommunity.MercuryIT</groupId>
+                    <artifactId>mercuryit-mongo</artifactId>
+                    <version>${release.version}</version>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
@@ -71,6 +78,12 @@
                 <dependency>
                     <groupId>community.redrover.mercuryit</groupId>
                     <artifactId>mercuryit-sql</artifactId>
+                    <version>dev</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>community.redrover.mercuryit</groupId>
+                    <artifactId>mercuryit-mongo</artifactId>
                     <version>dev</version>
                     <scope>test</scope>
                 </dependency>
@@ -94,17 +107,22 @@
         </dependency>
 
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.1.214</version>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>2.1.214</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

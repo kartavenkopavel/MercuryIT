@@ -2,28 +2,12 @@ package community.redrover.mercuryit;
 
 import lombok.SneakyThrows;
 
-import java.lang.ref.Cleaner;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.*;
 
 
-@SuppressWarnings("unchecked")
-public class MercuryITSQLResponse extends MercuryITResponse<MercuryITSQLResponse> {
-
-    private static class ResultSetHolder {
-
-        private final ResultSet resultSet;
-
-        public ResultSetHolder(ResultSet resultSet) {
-            this.resultSet = resultSet;
-        }
-
-        @SneakyThrows
-        protected void close() {
-            resultSet.close();
-        }
-    }
+public class MercuryITSQLResponse extends MercuryITResponseAutoCloseable<MercuryITSQLResponse> {
 
     private final ResultSet resultSet;
 
@@ -31,8 +15,7 @@ public class MercuryITSQLResponse extends MercuryITResponse<MercuryITSQLResponse
         super(configHolder);
         this.resultSet = resultSet;
 
-        Cleaner cleaner = Cleaner.create();
-        cleaner.register(this, new ResultSetHolder(resultSet)::close);
+        registerAutoCloseable(resultSet);
     }
 
     @SneakyThrows

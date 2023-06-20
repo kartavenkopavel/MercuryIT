@@ -15,6 +15,7 @@
         <module>json</module>
         <module>http</module>
         <module>sql</module>
+        <module>mongo</module>
     </modules>
 
     <properties>
