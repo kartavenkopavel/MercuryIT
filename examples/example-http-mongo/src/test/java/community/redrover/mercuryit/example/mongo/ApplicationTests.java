@@ -58,9 +58,10 @@ public class ApplicationTests {
                 .urlf("http://localhost:%d/api/employee/create", port)
                 .body(expectedEmployee)
                 .post()
-                .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .accept(response -> {
-                    EmployeeEntity actualEmployee = response.getBody(EmployeeEntity.class);
+                .assertion(MercuryITHttpResponse::getCode)
+                .equalsTo(200)
+                .assertion(response -> response.getBody(EmployeeEntity.class))
+                .peek(actualEmployee -> {
                     expectedEmployee.setId(actualEmployee.getId());
                     storedEmployeesList.add(actualEmployee);
 
@@ -69,10 +70,9 @@ public class ApplicationTests {
 
                 .request(MercuryITMongo.class)
                 .connection()
-                .db()
-                .accept(response -> {
-                    List<EmployeeEntity> employeeList = response.collection(EmployeeEntity.class, Filters.eq("_id", new ObjectId(expectedEmployee.getId())));
-
+                .database()
+                .assertion(response -> response.collection(EmployeeEntity.class, Filters.eq("_id", new ObjectId(expectedEmployee.getId()))))
+                .peek(employeeList -> {
                     Assertions.assertEquals(1, employeeList.size());
                     Assertions.assertEquals(expectedEmployee, employeeList.get(0));
                 });
@@ -84,16 +84,17 @@ public class ApplicationTests {
         MercuryIT.request(MercuryITHttp.class)
                 .urlf("http://localhost:%d/api/employee/list", port)
                 .get()
-                .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .accept(response ->
+                .assertion(MercuryITHttpResponse::getCode)
+                .equalsTo(200)
+                .peek(response ->
                         Assertions.assertArrayEquals(storedEmployeesList.toArray(EmployeeEntity[]::new),
                                 response.getBody(EmployeeEntity[].class))
                 )
 
                 .request(MercuryITMongo.class)
                 .connection()
-                .db()
-                .accept(response ->
+                .database()
+                .peek(response ->
                     Assertions.assertArrayEquals(storedEmployeesList.toArray(EmployeeEntity[]::new),
                             response.collection(EmployeeEntity.class).toArray(EmployeeEntity[]::new)));
     }
@@ -106,8 +107,9 @@ public class ApplicationTests {
         MercuryIT.request(MercuryITHttp.class)
                 .urlf("http://localhost:%d/api/employee/%s", port, storedEmployee.getId())
                 .get()
-                .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .accept(response ->
+                .assertion(MercuryITHttpResponse::getCode)
+                .equalsTo(200)
+                .peek(response ->
                         Assertions.assertEquals(storedEmployee, response.getBody(EmployeeEntity.class)));
     }
 
@@ -123,17 +125,17 @@ public class ApplicationTests {
                 .urlf("http://localhost:%d/api/employee/edit", port)
                 .body(expectedEmployee)
                 .put()
-                .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .accept(response ->
+                .assertion(MercuryITHttpResponse::getCode)
+                .equalsTo(200)
+                .peek(response ->
                     Assertions.assertEquals(expectedEmployee, response.getBody(EmployeeEntity.class))
                 )
 
                 .request(MercuryITMongo.class)
                 .connection()
-                .db()
-                .accept(response -> {
-                    List<EmployeeEntity> employeeList = response.collection(EmployeeEntity.class, Filters.eq("_id", new ObjectId(expectedEmployee.getId())));
-
+                .database()
+                .assertion(response -> response.collection(EmployeeEntity.class, Filters.eq("_id", new ObjectId(expectedEmployee.getId()))))
+                .peek(employeeList -> {
                     Assertions.assertEquals(1, employeeList.size());
                     Assertions.assertEquals(expectedEmployee, employeeList.get(0));
                 });
@@ -146,8 +148,9 @@ public class ApplicationTests {
                 .urlf("http://localhost:%d/api/employee/update/%s", port, storedEmployee.getId())
                 .body(Map.of("title", EMPLOYEE_TITLE))
                 .patch()
-                .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .accept(response -> {
+                .assertion(MercuryITHttpResponse::getCode)
+                .equalsTo(200)
+                .peek(response -> {
                     EmployeeEntity actualEmployeeEntity = response.getBody(EmployeeEntity.class);
 
                     Assertions.assertNotNull(actualEmployeeEntity);
@@ -157,10 +160,9 @@ public class ApplicationTests {
 
                 .request(MercuryITMongo.class)
                 .connection()
-                .db()
-                .accept(response -> {
-                    List<EmployeeEntity> employeeList = response.collection(EmployeeEntity.class, Filters.eq("_id", new ObjectId(storedEmployee.getId())));
-
+                .database()
+                .assertion(response -> response.collection(EmployeeEntity.class, Filters.eq("_id", new ObjectId(storedEmployee.getId()))))
+                .peek(employeeList -> {
                     Assertions.assertEquals(1, employeeList.size());
                     Assertions.assertEquals(EMPLOYEE_NAME, employeeList.get(0).getName());
                     Assertions.assertEquals(EMPLOYEE_TITLE, employeeList.get(0).getTitle());
@@ -178,11 +180,8 @@ public class ApplicationTests {
 
                 .request(MercuryITMongo.class)
                 .connection()
-                .db()
-                .accept(response -> {
-                    List<EmployeeEntity> employeeList = response.collection(EmployeeEntity.class, Filters.eq("_id", new ObjectId(storedEmployee.getId())));
-
-                    Assertions.assertEquals(0, employeeList.size());
-                });
+                .database()
+                .assertion(response -> response.collection(EmployeeEntity.class, Filters.eq("_id", new ObjectId(storedEmployee.getId()))).size())
+                .equalsTo(0);
     }
 }

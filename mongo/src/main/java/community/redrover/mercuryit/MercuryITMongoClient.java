@@ -14,12 +14,12 @@ public class MercuryITMongoClient extends MercuryITResponseAutoCloseable<Mercury
         registerAutoCloseable(mongoClient);
     }
 
-    public MercuryITMongoResponse db() {
+    public MercuryITMongoResponse database() {
         MercuryITMongoConfig mercuryITMongoConfig = config(MercuryITMongoConfig.class);
-        return db(mercuryITMongoConfig.getDb());
+        return database(mercuryITMongoConfig.getDatabase());
     }
 
-    public MercuryITMongoResponse db(String dbName) {
-        return new MercuryITMongoResponse(getConfigHolder(), this, mongoClient.getDatabase(dbName));
+    public MercuryITMongoResponse database(String database) {
+        return new MercuryITMongoResponse(getConfigHolder(), this, mongoClient.getDatabase(database));
     }
 }

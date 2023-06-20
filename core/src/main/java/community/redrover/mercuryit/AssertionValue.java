@@ -2,7 +2,7 @@ package community.redrover.mercuryit;
 
 import org.junit.jupiter.api.Assertions;
 
-public class AssertionValue<Self, Value> {
+public final class AssertionValue<Self extends MercuryITResponse<Self>, Value> implements AssertionValueInterface<Self, Value> {
 
     private final Self self;
     private final Value value;
@@ -10,6 +10,14 @@ public class AssertionValue<Self, Value> {
     AssertionValue(Self self, Value value) {
         this.self = self;
         this.value = value;
+    }
+
+    public Self getSelf() {
+        return self;
+    }
+
+    public Value getValue() {
+        return value;
     }
 
     public Self equalsTo(Object expected, String message) {

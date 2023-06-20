@@ -33,9 +33,10 @@ public class ApplicationTests {
                 .urlf("http://localhost:%d/api/employee/create", port)
                 .body(storedEmployee)
                 .post()
-                .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .accept(response -> {
-                    EmployeeEntity actualEmployee = response.getBody(EmployeeEntity.class);
+                .assertion(MercuryITHttpResponse::getCode)
+                .equalsTo(200)
+                .assertion(response -> response.getBody(EmployeeEntity.class))
+                .peek(actualEmployee -> {
                     storedEmployee.setId(actualEmployee.getId());
                     Assertions.assertEquals(storedEmployee, actualEmployee);
                 });
@@ -47,8 +48,9 @@ public class ApplicationTests {
         MercuryIT.request(MercuryITHttp.class)
                 .urlf("http://localhost:%d/api/employee/list", port)
                 .get()
-                .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .accept(response ->
+                .assertion(MercuryITHttpResponse::getCode)
+                .equalsTo(200)
+                .peek(response ->
                     Assertions.assertArrayEquals(new EmployeeEntity[]{storedEmployee},
                             response.getBody(EmployeeEntity[].class))
                 );
@@ -61,9 +63,7 @@ public class ApplicationTests {
                 .urlf("http://localhost:%d/api/employee/%d", port, storedEmployee.getId())
                 .get()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .accept(response ->
-                    Assertions.assertEquals(storedEmployee, response.getBody(EmployeeEntity.class))
-                );
+                .assertion(response -> response.getBody(EmployeeEntity.class)).equalsTo(storedEmployee);
     }
 
     @Test
@@ -79,8 +79,7 @@ public class ApplicationTests {
                 .body(expectedEmployee)
                 .put()
                 .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .accept(response ->
-                    Assertions.assertEquals(expectedEmployee, response.getBody(EmployeeEntity.class)));
+                .assertion(response -> response.getBody(EmployeeEntity.class)).equalsTo(expectedEmployee);
     }
 
     @Test
@@ -90,10 +89,10 @@ public class ApplicationTests {
                 .urlf("http://localhost:%d/api/employee/update/%d", port, storedEmployee.getId())
                 .body(Map.of("title", EMPLOYEE_TITLE))
                 .patch()
-                .assertion(MercuryITHttpResponse::getCode).equalsTo(200)
-                .accept(response -> {
-                    EmployeeEntity actualEmployeeEntity = response.getBody(EmployeeEntity.class);
-
+                .assertion(MercuryITHttpResponse::getCode)
+                .equalsTo(200)
+                .assertion(response -> response.getBody(EmployeeEntity.class))
+                .peek(actualEmployeeEntity -> {
                     Assertions.assertNotNull(actualEmployeeEntity);
                     Assertions.assertEquals(EMPLOYEE_NAME,  actualEmployeeEntity.getName());
                     Assertions.assertEquals(EMPLOYEE_TITLE, actualEmployeeEntity.getTitle());

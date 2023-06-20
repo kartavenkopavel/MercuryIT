@@ -1,12 +1,8 @@
 package community.redrover.mercuryit;
 
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-
 @SuppressWarnings("unchecked")
-public abstract class MercuryITResponse<Self extends MercuryITResponse<Self>> extends MercuryITObject<Self> {
+public abstract class MercuryITResponse<Self extends MercuryITResponse<Self>> extends MercuryITObject<Self> implements AssertionValueInterface<Self, Self> {
 
     protected MercuryITResponse(MercuryITConfigHolder configHolder) {
         super(configHolder);
@@ -17,20 +13,13 @@ public abstract class MercuryITResponse<Self extends MercuryITResponse<Self>> ex
         return super.request(clazz);
     }
 
-    public <Result> Result apply(Function<Self, Result> apply) {
-        return apply.apply((Self) this);
-    }
-
-    public Self accept(Consumer<Self> actual) {
-        actual.accept((Self) this);
+    @Override
+    public Self getSelf() {
         return (Self) this;
     }
 
-    public <Value> AssertionValue<Self, Value> assertion(Function<Self, Value> actual) {
-        return new AssertionValue<>((Self) this, actual.apply((Self) this));
-    }
-
-    public Assertion<Self> assertion() {
-        return new Assertion<>((Self) this);
+    @Override
+    public Self getValue() {
+        return (Self) this;
     }
 }

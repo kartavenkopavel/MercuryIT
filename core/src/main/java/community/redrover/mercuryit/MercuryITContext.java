@@ -3,7 +3,7 @@ package community.redrover.mercuryit;
 
 public final class MercuryITContext extends MercuryITRequest<MercuryITContext> {
 
-    protected MercuryITContext(MercuryITConfigHolder configHolder) {
+    MercuryITContext(MercuryITConfigHolder configHolder) {
         super(configHolder);
     }
 
