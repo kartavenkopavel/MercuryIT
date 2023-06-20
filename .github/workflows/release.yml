@@ -58,3 +58,4 @@ jobs:
             ${{ github.workspace }}/http/target/mercuryit-http-*.jar
             ${{ github.workspace }}/json/target/mercuryit-json-*.jar
             ${{ github.workspace }}/json/target/mercuryit-sql-*.jar
+            ${{ github.workspace }}/json/target/mercuryit-mongo-*.jar

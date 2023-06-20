@@ -37,7 +37,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <release.version>0.1.4</release.version>
+                <release.version>0.1.5</release.version>
             </properties>
             <repositories>
                 <repository>
